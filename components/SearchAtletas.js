@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Ícones para busca e favoritos
-import { useFavoritos } from '../context/FavoritosContext'; // Importando o contexto de favoritos
+import { Ionicons } from '@expo/vector-icons'; 
+import { useFavoritos } from '../context/FavoritosContext'; 
 
 const SearchAtletas = () => {
   const [jogadores, setJogadores] = useState([]);
   const [query, setQuery] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { favoritos, addFavorito, removeFavorito } = useFavoritos(); // Funções do contexto
+  const { favoritos, addFavorito, removeFavorito } = useFavoritos(); 
 
   const handleSearch = async () => {
-    if (!query.trim()) return; // Evita pesquisas vazias
+    if (!query.trim()) return; 
 
     setLoading(true);
     setError(null);
@@ -22,12 +22,11 @@ const SearchAtletas = () => {
 
       const teams = await response.json();
 
-      // Filtrar os jogadores pelo nome pesquisado
       const matchedPlayers = teams.flatMap(team =>
         team.players
           .filter(player => player.fullname?.toLowerCase().includes(query.toLowerCase()))
           .map(player => ({
-            id: `${team.name}-${player.nickname}`, // Criando um ID único
+            id: `${team.name}-${player.nickname}`, 
             fullname: player.fullname || 'Nome desconhecido',
             nickname: player.nickname,
             image: player.image || null,
@@ -47,6 +46,9 @@ const SearchAtletas = () => {
 
   return (
     <View style={styles.container}>
+      {/* Título acima da barra de pesquisa */}
+      <Text style={styles.title}>Pesquisa de ProPlayers de Counter Strike</Text>
+
       {/* Barra de Pesquisa */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -63,12 +65,11 @@ const SearchAtletas = () => {
       {error && <Text style={styles.error}>Erro: {error}</Text>}
       {loading && <Text style={styles.loading}>Carregando...</Text>}
 
-      {/* Lista de Jogadores */}
       <FlatList
         data={jogadores}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          const isFavorite = favoritos.some(fav => fav.id === item.id); // Verifica se está nos favoritos
+          const isFavorite = favoritos.some(fav => fav.id === item.id);
           return (
             <View style={styles.card}>
               {item.image && <Image source={{ uri: item.image }} style={styles.image} />}
@@ -76,7 +77,6 @@ const SearchAtletas = () => {
               <Text style={styles.country}>{item.country}</Text>
               {item.flag && <Image source={{ uri: item.flag }} style={styles.flag} />}
               
-              {/* Botão de Favoritar */}
               <TouchableOpacity
                 style={styles.favoriteButton}
                 onPress={() => (isFavorite ? removeFavorito(item.id) : addFavorito(item))}
@@ -93,6 +93,7 @@ const SearchAtletas = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
+  title: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
